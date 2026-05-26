@@ -62,13 +62,13 @@ app.use(express.json());
 
 /*
 ========================================
-PASTE YOUR DETAILS HERE
+ENV VARIABLES
 ========================================
 */
 
-const API_KEY = "af4f08fa4ffd447fb0fc51ab5d85d869";
-const VOICE_ID = "67919906ddca447ca480b2ed38bde734";
-
+const API_KEY = process.env.API_KEY;
+const VOICE_ID = process.env.VOICE_ID;
+console.log(req.body);
 /*
 ========================================
 TEST ROUTE
@@ -89,7 +89,13 @@ app.post("/tts", async (req, res) => {
 
   try {
 
-    const text = req.body.text;
+    console.log("FULL BODY:", req.body);
+
+    const text =
+      req.body.text ||
+      req.body.message ||
+      req.body.input ||
+      "Hello";
 
     console.log("Incoming Text:", text);
 
@@ -106,10 +112,12 @@ app.post("/tts", async (req, res) => {
 
       data: {
         text: text,
-        reference_id: VOICE_ID
+        voice_id: VOICE_ID
       },
 
-      responseType: "arraybuffer"
+      responseType: "arraybuffer",
+
+      timeout: 30000
 
     });
 
@@ -122,24 +130,14 @@ app.post("/tts", async (req, res) => {
   } catch (error) {
 
     console.log("ERROR:");
-    console.log(error.response?.data || error.message);
+
+    console.log(
+      error.response?.data?.toString() ||
+      error.message
+    );
 
     res.status(500).send("Fish Audio TTS Error");
 
   }
-
-});
-
-/*
-========================================
-START SERVER
-========================================
-*/
-
-const PORT = 3020;
-
-app.listen(PORT, () => {
-
-  console.log(`✅ Server running on port ${PORT}`);
 
 });
