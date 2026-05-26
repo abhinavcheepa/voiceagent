@@ -18,9 +18,13 @@ app.post("/tts", async (req, res) => {
 
   try {
 
-    const text = req.body.text;
+    console.log(req.body);
+
+    const text = req.body.text || req.body.message;
 
     console.log("Incoming Text:", text);
+
+    // rest same
 
     const response = await axios.post(
 
